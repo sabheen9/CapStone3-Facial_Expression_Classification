@@ -54,7 +54,7 @@ while True:
         
         # Draw a rectangle around the detected face
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-        
+    
         # Display the predicted emotion label near the face
         cv2.putText(frame, predicted_emotion_label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
     
@@ -68,4 +68,3 @@ while True:
 # Release the webcam and close the OpenCV window
 cap.release()
 cv2.destroyAllWindows()
-
