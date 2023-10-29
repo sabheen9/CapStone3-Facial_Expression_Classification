@@ -1,5 +1,8 @@
 # local package
 -e .
+opencv-python
+numpy
+tensorflow
 
 # external requirements
 click
