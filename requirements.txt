@@ -1,9 +1,10 @@
-opencv-python
+opencv-pytho==4.8.1.78
+Python 3.10.9
 seaborn
 matplotlib
 pandas
 scikit_learn
-streamlit
+streamlit== 1.27.2
 tensorflow-cpu
 Pillow
 numpy
