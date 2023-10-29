@@ -1,23 +1,24 @@
 import streamlit as st
-import tensorflow as tf
-import random
-from PIL import Image, ImageOps
-import numpy as np
 import cv2
 
+def main():
+    st.set_page_config(page_title="Streamlit WebCam App")
+    st.title("Webcam Display Steamlit App")
+    st.caption("Powered by OpenCV, Streamlit")
+    cap = cv2.VideoCapture(0)
+    frame_placeholder = st.empty()
+    stop_button_pressed = st.button("Stop")
+    while cap.isOpened() and not stop_button_pressed:
+        ret, frame = cap.read()
+        if not ret:
+            st.write("Video Capture Ended")
+            break
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame_placeholder.image(frame,channels="RGB")
+        if cv2.waitKey(1) & 0xFF == ord("q") or stop_button_pressed:
+            break
+    cap.release()
+    cv2.destroyAllWindows()
 
-
-img_file_buffer = st.camera_input("Take a picture")
-
-if img_file_buffer is not None:
-    # To read image file buffer with OpenCV:
-    bytes_data = img_file_buffer.getvalue()
-    cv2_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
-
-    # Check the type of cv2_img:
-    # Should output: <class 'numpy.ndarray'>
-    st.write(type(cv2_img))
-
-    # Check the shape of cv2_img:
-    # Should output shape: (height, width, channels)
-    st.write(cv2_img.shape)
+if __name__ == "__main__":
+    main()
