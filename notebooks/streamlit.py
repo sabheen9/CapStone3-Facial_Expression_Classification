@@ -1,3 +1,36 @@
+import streamlit as st
+import cv2
+import numpy as np
+from tensorflow.keras.models import model_from_json
+
+def main():
+    # Load the pre-trained model
+    model_json_file = "Emotion-model.json"
+    model_weights_file = "FacialExpression_weights.hdf5"
+
+    with open(model_json_file, "r") as json_file:
+        loaded_model_json = json_file.read()
+        model = model_from_json(loaded_model_json)
+    model.load_weights(model_weights_file)
+
+    # Load the Haar Cascade classifier for face detection
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
+    # Define the list of emotion labels
+    emotion_labels = ["Angry", "Disgust", "Fear", "Happy", "Neutral", "Sad", "Surprise"]
+
+    st.set_page_config(page_title="Facial Expression Recognition", page_icon=":mango:")
+    st.title("Facial Expression Recognition with Streamlit")
+    cap = cv2.VideoCapture(0)
+    frame_placeholder = st.empty()
+    stop_button_pressed = st.button("Stop")
+    while cap.isOpened() and not stop_button_pressed:
+      
+        # Read a frame from the webcam
+        ret, frame = cap.read()
+        if not ret:
+            st.write("Video Capture Ended")
+            break
     
         # Convert the frame to grayscale for face detection
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -47,3 +80,6 @@
 
 if __name__ == "__main__":
     main()
+
+
+
