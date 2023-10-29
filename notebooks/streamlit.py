@@ -3,7 +3,6 @@ import cv2
 import numpy as np
 from tensorflow.keras.models import model_from_json
 
-
 def main():
     # Load the pre-trained model
     model_json_file = "Emotion-model.json"
@@ -20,9 +19,8 @@ def main():
     # Define the list of emotion labels
     emotion_labels = ["Angry", "Disgust", "Fear", "Happy", "Neutral", "Sad", "Surprise"]
 
-    st.set_page_config(page_title="Streamlit WebCam App")
-    st.title("Webcam Display Steamlit App")
-    st.caption("Powered by OpenCV, Streamlit")
+    st.set_page_config(page_title="Facial Expression Recognition", page_icon=":mango:")
+    st.title("Facial Expression Recognition with Streamlit")
     cap = cv2.VideoCapture(0)
     frame_placeholder = st.empty()
     stop_button_pressed = st.button("Stop")
@@ -30,6 +28,9 @@ def main():
       
         # Read a frame from the webcam
         ret, frame = cap.read()
+        if not ret:
+            st.write("Video Capture Ended")
+            break
     
         # Convert the frame to grayscale for face detection
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -64,11 +65,13 @@ def main():
     
             # Display the predicted emotion label near the face
             cv2.putText(frame, predicted_emotion_label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
-    
+
+        # Convert the frame to RGB for displaying in Streamlit
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
         # Display the frame with detected emotions
-        cv2.imshow('Facial Expression Recognition', frame)
+        frame_placeholder.image(frame, channels="RGB")
         
-        # Check for the 'q' key to quit the program
         if cv2.waitKey(1) & 0xFF == ord("q") or stop_button_pressed:
             break
     # Release the webcam and close the OpenCV window    
@@ -77,4 +80,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
