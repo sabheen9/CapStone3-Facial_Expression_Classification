@@ -1,4 +1,4 @@
-opencv-pytho==4.8.1.78
+
 Python 3.10.9
 seaborn
 matplotlib
