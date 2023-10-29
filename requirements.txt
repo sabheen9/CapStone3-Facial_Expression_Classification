@@ -1,5 +1,5 @@
 
-opencv-python
+pip install opencv-python==4.8.1.78
 numpy
 tensorflow
 streamlit
@@ -7,3 +7,5 @@ seaborn
 matplotlib
 pandas
 scikit_learn
+tensorflow-cpu
+Pillow==8.2.0
