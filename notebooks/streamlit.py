@@ -1,78 +1,71 @@
-#All the imports go here
-import numpy as np
 import cv2
- 
-#Initializing the face and eye cascade classifiers from xml files
-face_cascade = cv2.CascadeClassifier('C:/Users/sabhe/Downloads/haarcascade_frontalface_default.xml')
-eye_cascade = cv2.CascadeClassifier("C:/Users/sabhe/Downloads/haarcascade_eye_tree_eyeglasses.xml")
- 
-#Variable store execution state
-first_read = True
- 
-#Starting the video capture
+import numpy as np
+from tensorflow.keras.models import model_from_json
+
+# Load the pre-trained model
+model_json_file = "Emotion-model.json"
+model_weights_file = "FacialExpression_weights.hdf5"
+
+with open(model_json_file, "r") as json_file:
+    loaded_model_json = json_file.read()
+    model = model_from_json(loaded_model_json)
+model.load_weights(model_weights_file)
+
+# Load the Haar Cascade classifier for face detection
+face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
+# Define the list of emotion labels
+emotion_labels = ["Angry", "Disgust", "Fear", "Happy", "Neutral", "Sad", "Surprise"]
+
+# Open a connection to the webcam (0 for the default camera)
 cap = cv2.VideoCapture(0)
-ret,img = cap.read()
- 
-while(ret):
-    ret,img = cap.read()
-    #Converting the recorded image to grayscale
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    #Applying filter to remove impurities
-    gray = cv2.bilateralFilter(gray,5,1,1)
- 
-    #Detecting the face for region of image to be fed to eye classifier
-    faces = face_cascade.detectMultiScale(gray, 1.3, 5,minSize=(200,200))
-    if(len(faces)>0):
-        for (x,y,w,h) in faces:
-            img = cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
- 
-            #roi_face is face which is input to eye classifier
-            roi_face = gray[y:y+h,x:x+w]
-            roi_face_clr = img[y:y+h,x:x+w]
-            eyes = eye_cascade.detectMultiScale(roi_face,1.3,5,minSize=(50,50))
- 
-            #Examining the length of eyes object for eyes
-            if(len(eyes)>=2):
-                #Check if program is running for detection
-                if(first_read):
-                    cv2.putText(img,
-                    "Eye detected press s to begin",
-                    (70,70), 
-                    cv2.FONT_HERSHEY_PLAIN, 3,
-                    (0,255,0),2)
-                else:
-                    cv2.putText(img,
-                    "Eyes open!", (70,70),
-                    cv2.FONT_HERSHEY_PLAIN, 2,
-                    (255,255,255),2)
-            else:
-                if(first_read):
-                    #To ensure if the eyes are present before starting
-                    cv2.putText(img,
-                    "No eyes detected", (70,70),
-                    cv2.FONT_HERSHEY_PLAIN, 3,
-                    (0,0,255),2)
-                else:
-                    #This will print on console and restart the algorithm
-                    print("Blink detected--------------")
-                    cv2.waitKey(3000)
-                    first_read=True
-             
-    else:
-        cv2.putText(img,
-        "No face detected",(100,100),
-        cv2.FONT_HERSHEY_PLAIN, 3,
-        (0,255,0),2)
- 
-    #Controlling the algorithm with keys
-    cv2.imshow('img',img)
-    a = cv2.waitKey(1)
-    if(a==ord('q')):
+
+while True:
+    # Read a frame from the webcam
+    ret, frame = cap.read()
+    
+    # Convert the frame to grayscale for face detection
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    # Detect faces in the frame
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+    for (x, y, w, h) in faces:
+        # Extract the face region
+        face_roi = gray[y:y+h, x:x+w]
+        
+        # Resize the face region to match the input size of your model
+        face_roi = cv2.resize(face_roi, (48, 48))
+        
+        # Normalize the pixel values to be between 0 and 1
+        face_roi = face_roi / 255.0
+        
+        # Reshape the face region to match the model's input shape
+        face_roi = face_roi.reshape(1, 48, 48, 1)
+        
+        # Use the model to predict the emotion
+        emotion_probabilities = model.predict(face_roi)
+        
+        # Get the index of the predicted emotion
+        predicted_emotion_index = np.argmax(emotion_probabilities)
+        
+        # Get the label of the predicted emotion
+        predicted_emotion_label = emotion_labels[predicted_emotion_index]
+        
+        # Draw a rectangle around the detected face
+        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+        
+        # Display the predicted emotion label near the face
+        cv2.putText(frame, predicted_emotion_label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+    
+    # Display the frame with detected emotions
+    cv2.imshow('Facial Expression Recognition', frame)
+    
+    # Check for the 'q' key to quit the program
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-    elif(a==ord('s') and first_read):
-        #This will start the detection
-        first_read = False
- 
+
+# Release the webcam and close the OpenCV window
 cap.release()
 cv2.destroyAllWindows()
 
