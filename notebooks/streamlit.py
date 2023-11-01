@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 from tensorflow.keras.models import model_from_json
 
+
 # Load the pre-trained model
 model_json_file = "Emotion-model.json"
 model_weights_file = "FacialExpression_weights.hdf5"
