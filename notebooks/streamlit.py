@@ -5,7 +5,6 @@ import cv2
 import numpy as np
 from tensorflow.keras.models import model_from_json
 
-
 # Load the pre-trained model
 model_json_file = "Emotion-model.json"
 model_weights_file = "FacialExpression_weights.hdf5"
@@ -64,14 +63,10 @@ class VideoProcessor:
 st.set_page_config(page_title="Facial Expression Recognition", page_icon=":mango:")
 st.title("Facial Expression Recognition with Streamlit")
 
+
 with st.sidebar:
-    st.header("Facial Expression Recognition")
-    st.title("Facial Expression Recognition Prediction")
+    st.image("image123.jpeg")
+    st.title("Facial Expression Recognition")
     st.subheader("Facial expression recognition enables more natural and intuitive interactions between humans and computer systems, enhancing user experience and engagement.")
 
 webrtc_streamer(key="example", video_processor_factory=VideoProcessor, rtc_configuration=RTCConfiguration({"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}))
-
-
-
-
-
