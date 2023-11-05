@@ -3,6 +3,20 @@ Facial_Expression_Classification
 
 In the project we can Classify Human Face Expressions 
 
+Installation of python libraries:
+keras with tensorflow as backend
+OpenCV
+numpy
+pandas
+matplotlib
+streamlit_webrtc
+streamlit
+av
+
+DataSet:
+In this project I used kaggle dataset
+https://www.kaggle.com/competitions/challenges-in-representation-learning-facial-expression-recognition-challenge/data?select=icml_face_data.csv
+
 Project Organization
 ------------
 
